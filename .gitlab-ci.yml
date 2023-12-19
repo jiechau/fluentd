@@ -1,0 +1,38 @@
+stages:
+  - build_gitlab
+  - build_dockerhub
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE_NAME: my-image-name # Replace with your image name
+  IMAGE_TAG: latest # Replace with your desired tag or use $CI_COMMIT_REF_SLUG for dynamic tagging
+
+services:
+  - docker:dind
+
+do_gitlab:
+  image: docker:latest
+  stage: build_gitlab
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build . -t $CI_REGISTRY_IMAGE:edge -t $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE
+    ## docker run -it --rm registry.gitlab.com/jiechau/fluentd
+    - docker push $CI_REGISTRY_IMAGE
+    - docker push $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:edge
+  only:
+    - main
+
+do_dockerhub:
+  image: docker:latest
+  stage: build_dockerhub
+  script:
+    - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD 
+    - docker build . -t jiechau/fluentd:edge -t jiechau/fluentd:latest -t jiechau/fluentd
+    ## docker run -it --rm jiechau/fluentd 
+    - docker push jiechau/fluentd
+    - docker push jiechau/fluentd:latest
+    - docker push jiechau/fluentd:edge
+  only:
+    - main
