@@ -5,8 +5,8 @@ stages:
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
-  IMAGE_NAME: my-image-name # Replace with your image name
-  IMAGE_TAG: latest # Replace with your desired tag or use $CI_COMMIT_REF_SLUG for dynamic tagging
+  #IMAGE_NAME: my-image-name # Replace with your image name
+  #IMAGE_TAG: latest # Replace with your desired tag or use $CI_COMMIT_REF_SLUG for dynamic tagging
 
 services:
   - docker:dind
