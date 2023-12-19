@@ -17,6 +17,6 @@ set -o vi          \n"\
 
 RUN apt-get install -y python3 pip
 RUN pip install --upgrade pip
-RUN pip install -y elasticsearch
+RUN pip install elasticsearch
 #USER fluent
 EXPOSE 24224 24224/udp 8888
