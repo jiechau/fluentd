@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: fluentd-latest
+    runs-on: fluentd:latest
     permissions:
       contents: read
       packages: write

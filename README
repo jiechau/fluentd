@@ -22,26 +22,55 @@ kubectl run my-fluentd -it --rm -n apps --image ghcr.io/jiechau/fluentd -- bash
       </parse>
     </source>
 
+    # Add a filter to inject the pod name                                                                                      
+    <filter **>                                                                                                                
+      @type record_transformer                                                                                                 
+      enable_ruby                                                                                                              
+      <record>                                                                                                                 
+        pod_name ${ENV['HOSTNAME']}                                                                                            
+      </record>                                                                                                                
+    </filter> 
+
+    # Add a filter to extract fields from the transaction object                                                               
+    <filter nginx.security>                                                                                                    
+      @type record_transformer                                                                                                 
+      enable_ruby                                                                                                              
+      <record>                                                                                                                 
+        client_ip ${record.dig("transaction", "client_ip")}                                                                    
+      </record>                                                                                                                
+    </filter>  
+
     <match nginx.security>
       @type elasticsearch
       host esdev-api.aaa.bbb.com
       port 9200
-      logstash_format false
-      index_name mod_security-%Y.%m
       user UNUNUNUN
       password PWPWPWPW
       #api_key XXXYYYZZZ_but_doesnt_work_SHOULD_use_user_password
-      include_tag_key true
-      tag_key @log_name
-      <buffer>
-        @type memory
-        flush_interval 10s
-        timekey 1d
-        timekey_use_utc true
-        timekey_wait 1m
-      </buffer>
+      #index_name mod_security-%Y.%m
+      logstash_format true                                                                                                     
+      logstash_prefix mod_security                                                                                             
+      logstash_prefix_separator -                                                                                              
+      logstash_dateformat %Y.%m                                                                                                
+      include_timestamp true                                                                                                   
+      include_tag_key true                                                                                                     
+      tag_key @log_name                                                                                                        
+      <buffer tag, time>                                                                                                       
+        @type memory                                                                                                           
+        flush_mode interval                                                                                                    
+        flush_interval 10s                                                                                                     
+        timekey 1d                                                                                                             
+        timekey_use_utc false                                                                                                  
+        timekey_wait 1m                                                                                                        
+      </buffer> 
     </match>
 
-    <match *.**>
-      @type stdout
-    </match>
+    <match **>                                                                                                                 
+      @type stdout                                                                                                             
+    </match>                                                                                                                   
+                                                                                                                                
+    <label @FLUENT_LOG>                                                                                                        
+      <match **>                                                                                                               
+        @type stdout                                                                                                           
+      </match>                                                                                                                 
+    </label>   
