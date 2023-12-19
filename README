@@ -1,0 +1,11 @@
+
+docker build . -t jiechau/fluentd:edge -t jiechau/fluentd:latest -t jiechau/fluentd
+docker push jiechau/fluentd
+docker push jiechau/fluentd:edge
+
+docker run -it --rm jiechau/fluentd
+docker run -it --rm registry.gitlab.com/jiechau/fluentd
+docker run -it --rm ghcr.io/jiechau/fluentd
+kubectl run my-shell -it --rm -n aiapi --image jiechau/fluentd -- bash
+kubectl run my-shell -it --rm -n aiapi --image registry.gitlab.com/jiechau/fluentd -- bash
+kubectl run my-shell -it --rm -n aiapi --image ghcr.io/jiechau/fluentd -- bash
