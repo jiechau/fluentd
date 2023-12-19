@@ -1,11 +1,47 @@
+# FROM fluent/fluentd:edge-debian
 
 docker build . -t jiechau/fluentd:edge -t jiechau/fluentd:latest -t jiechau/fluentd
 docker push jiechau/fluentd
 docker push jiechau/fluentd:edge
 
-docker run -it --rm jiechau/fluentd
-docker run -it --rm registry.gitlab.com/jiechau/fluentd
-docker run -it --rm ghcr.io/jiechau/fluentd
-kubectl run my-shell -it --rm -n aiapi --image jiechau/fluentd -- bash
-kubectl run my-shell -it --rm -n aiapi --image registry.gitlab.com/jiechau/fluentd -- bash
-kubectl run my-shell -it --rm -n aiapi --image ghcr.io/jiechau/fluentd -- bash
+docker run -it --rm jiechau/fluentd:edge
+docker run -it --rm registry.gitlab.com/jiechau/fluentd:edge
+docker run -it --rm ghcr.io/jiechau/fluentd:edge
+kubectl run my-fluentd -it --rm -n apps --image jiechau/fluentd -- bash
+kubectl run my-fluentd -it --rm -n apps --image registry.gitlab.com/jiechau/fluentd -- bash
+kubectl run my-fluentd -it --rm -n apps --image ghcr.io/jiechau/fluentd -- bash
+
+# fluent.conf
+    <source>
+      @type tail
+      path /var/log/nginx/mod_security.log
+      pos_file /var/log/nginx/mod_security.log.pos
+      tag nginx.security
+      <parse>
+        @type json
+      </parse>
+    </source>
+
+    <match nginx.security>
+      @type elasticsearch
+      host esdev-api.aaa.bbb.com
+      port 9200
+      logstash_format false
+      index_name mod_security-%Y.%m
+      user UNUNUNUN
+      password PWPWPWPW
+      #api_key XXXYYYZZZ_but_doesnt_work_SHOULD_use_user_password
+      include_tag_key true
+      tag_key @log_name
+      <buffer>
+        @type memory
+        flush_interval 10s
+        timekey 1d
+        timekey_use_utc true
+        timekey_wait 1m
+      </buffer>
+    </match>
+
+    <match *.**>
+      @type stdout
+    </match>
