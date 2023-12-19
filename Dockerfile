@@ -1,3 +1,9 @@
+#FROM fluent/fluentd:edge
+#USER root
+#RUN fluent-gem install fluent-plugin-elasticsearch
+#USER fluent
+#EXPOSE 24224 24224/udp
+
 FROM fluent/fluentd:edge-debian
 USER root
 RUN fluent-gem install fluent-plugin-elasticsearch
@@ -15,7 +21,7 @@ alias h='history'    \n\
 set -o vi            \n"\
 > /root/.bashrc
 
-RUN echo "# vim    \n\
+RUN echo "\" vim    \n\
 set paste          \n\
 set mouse-=a       \n"\
 > /root/.vimrc
