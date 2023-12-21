@@ -45,14 +45,39 @@ kubectl run my-fluentd -it --rm -n apps --image ghcr.io/jiechau/fluentd -- bash
 
     <match nginx.security>
       @type elasticsearch
-      host esdev-api.aaa.bbb.com
+      host esdev-api.XXX.bbb.com
       port 9200
-      user UNUNUNUN
-      password PWPWPWPW
+      user XXXUNUNUNUN
+      password XXXPWPWPWPW
       #api_key XXXYYYZZZ_but_doesnt_work_SHOULD_use_user_password
       #index_name nginx_security-%Y.%m
       logstash_format true
       logstash_prefix nginx_security
+      logstash_prefix_separator -
+      logstash_dateformat %Y.%m
+      include_timestamp true
+      include_tag_key true
+      tag_key @log_name
+      <buffer tag, time>
+        @type memory
+        flush_mode interval
+        flush_interval 10s
+        timekey 1d
+        timekey_use_utc false
+        timekey_wait 1m
+      </buffer>
+    </match>
+
+    <match nginx.access>
+      @type elasticsearch
+      host esdev-api.XXX.bbb.com
+      port 9200
+      user XXXUNUNUNUN
+      password XXXPWPWPWPW
+      #api_key XXXYYYZZZ_but_doesnt_work_SHOULD_use_user_password
+      #index_name nginx_security-%Y.%m
+      logstash_format true
+      logstash_prefix nginx_access
       logstash_prefix_separator -
       logstash_dateformat %Y.%m
       include_timestamp true
