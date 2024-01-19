@@ -26,9 +26,12 @@ set paste          \n\
 set mouse-=a       \n"\
 > /root/.vimrc
 
-RUN apt-get install -y python3 pip
-RUN pip install --upgrade pip
-RUN pip install elasticsearch
+#RUN apt-get install -y python3 pip
+#RUN pip install --upgrade pip
+#RUN pip install elasticsearch
 
-#USER fluent
+RUN groupmod -g 82 fluent
+RUN usermod -u 101 fluent
+USER fluent
+
 EXPOSE 24224 24224/udp 
